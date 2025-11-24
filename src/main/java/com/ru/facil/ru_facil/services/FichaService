@@ -1,0 +1,79 @@
+package com.ru.facil.ru_facil.services;
+import com.ru.facil.ru_facil.repositories.VendaFichaRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+
+
+@Service
+public class FichaService {
+
+
+private final FichaRepository fichaRepository;
+private final VendaFichaRepository vendaRepository;
+
+
+public FichaService(FichaRepository fichaRepository, VendaFichaRepository vendaRepository) {
+this.fichaRepository = fichaRepository;
+this.vendaRepository = vendaRepository;
+}
+
+
+public List<Ficha> listarTodas() {
+return fichaRepository.findAll();
+}
+
+
+public Optional<Ficha> buscarPorId(Long id) {
+return fichaRepository.findById(id);
+}
+
+
+public Ficha criar(Ficha ficha) {
+if (ficha.getEstoque() == null) ficha.setEstoque(0);
+return fichaRepository.save(ficha);
+}
+
+
+public Ficha atualizar(Long id, Ficha dados) {
+return fichaRepository.findById(id).map(f -> {
+f.setNome(dados.getNome());
+f.setPreco(dados.getPreco());
+f.setEstoque(dados.getEstoque());
+return fichaRepository.save(f);
+}).orElseThrow(() -> new IllegalArgumentException("Ficha não encontrada"));
+}
+
+
+@Transactional
+public VendaFicha vender(Long fichaId, int quantidade) {
+if (quantidade <= 0) throw new IllegalArgumentException("Quantidade deve ser maior que zero");
+
+
+Ficha ficha = fichaRepository.findById(fichaId).orElseThrow(() -> new IllegalArgumentException("Ficha não encontrada"));
+
+
+if (ficha.getEstoque() < quantidade) {
+throw new IllegalArgumentException("Estoque insuficiente");
+}
+
+
+ficha.setEstoque(ficha.getEstoque() - quantidade);
+fichaRepository.save(ficha);
+
+
+BigDecimal total = ficha.getPreco().multiply(BigDecimal.valueOf(quantidade));
+VendaFicha venda = new VendaFicha(ficha, quantidade, total, OffsetDateTime.now());
+return vendaRepository.save(venda);
+}
+
+
+public List<VendaFicha> listarVendas() {
+return vendaRepository.findAll();
+}
+}
