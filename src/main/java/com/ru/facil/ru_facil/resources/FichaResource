@@ -1,0 +1,59 @@
+package com.ru.facil.ru_facil.resources;
+
+
+import com.ru.facil.ru_facil.entities.Ficha;
+import com.ru.facil.ru_facil.entities.VendaFicha;
+import com.ru.facil.ru_facil.services.FichaService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+
+import java.net.URI;
+import java.util.List;
+
+
+@RestController
+@RequestMapping("/api/fichas")
+public class FichaResource {
+
+
+private final FichaService fichaService;
+
+
+public FichaResource(FichaService fichaService) {
+this.fichaService = fichaService;
+}
+
+
+@GetMapping
+public ResponseEntity<List<Ficha>> listar() {
+return ResponseEntity.ok(fichaService.listarTodas());
+}
+
+
+@PostMapping
+public ResponseEntity<Ficha> criar(@RequestBody Ficha ficha) {
+Ficha criado = fichaService.criar(ficha);
+return ResponseEntity.created(URI.create("/api/fichas/" + criado.getId())).body(criado);
+}
+
+
+@PutMapping("/{id}")
+public ResponseEntity<Ficha> atualizar(@PathVariable Long id, @RequestBody Ficha ficha) {
+Ficha atualizado = fichaService.atualizar(id, ficha);
+return ResponseEntity.ok(atualizado);
+}
+
+
+@PostMapping("/{id}/vender")
+public ResponseEntity<VendaFicha> vender(@PathVariable Long id, @RequestParam(defaultValue = "1") int quantidade) {
+VendaFicha venda = fichaService.vender(id, quantidade);
+return ResponseEntity.ok(venda);
+}
+
+
+@GetMapping("/vendas")
+public ResponseEntity<List<VendaFicha>> listarVendas() {
+return ResponseEntity.ok(fichaService.listarVendas());
+}
+}
