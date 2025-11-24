@@ -1,0 +1,58 @@
+package com.ru.facil.ru_facil.entities;
+
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+
+
+@Entity
+@Table(name = "vendas_fichas")
+public class VendaFicha {
+
+
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+
+
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "ficha_id", nullable = false)
+private Ficha ficha;
+
+
+@Column(nullable = false)
+private Integer quantidade;
+
+
+@Column(nullable = false, precision = 12, scale = 2)
+private BigDecimal total;
+
+
+@Column(nullable = false)
+private OffsetDateTime dataHora;
+
+
+public VendaFicha() {}
+
+
+public VendaFicha(Ficha ficha, Integer quantidade, BigDecimal total, OffsetDateTime dataHora) {
+this.ficha = ficha;
+this.quantidade = quantidade;
+this.total = total;
+this.dataHora = dataHora;
+}
+
+
+// getters/setters
+public Long getId() { return id; }
+public void setId(Long id) { this.id = id; }
+public Ficha getFicha() { return ficha; }
+public void setFicha(Ficha ficha) { this.ficha = ficha; }
+public Integer getQuantidade() { return quantidade; }
+public void setQuantidade(Integer quantidade) { this.quantidade = quantidade; }
+public BigDecimal getTotal() { return total; }
+public void setTotal(BigDecimal total) { this.total = total; }
+public OffsetDateTime getDataHora() { return dataHora; }
+public void setDataHora(OffsetDateTime dataHora) { this.dataHora = dataHora; }
+}
