@@ -1,0 +1,11 @@
+package com.ru.facil.ru_facil.repositories;
+
+
+import com.ru.facil.ru_facil.entities.Ficha;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+
+@Repository
+public interface FichaRepository extends JpaRepository<Ficha, Long> {
+}
